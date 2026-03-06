@@ -34,7 +34,7 @@ function parseApifyItem(item: ApifyScholarItem): PaperMeta {
     authors: item.authors ?? undefined,
     abstract: item.searchMatch ?? undefined,
     citationCount: item.citations != null ? Number(item.citations) : undefined,
-    oaPdfUrl: item.documentLink ?? undefined,
+    // oaPdfUrl left empty — filled by Semantic Scholar or Unpaywall in enrichMeta
     sourceUrl: item.link ?? undefined,
   };
 }

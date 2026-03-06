@@ -58,16 +58,18 @@ server.tool(
 server.tool(
   "paper_fetching",
   "Fetch full paper as markdown. Cache-first: checks local cache by normalizedTitle before network. " +
-  "Tries arxiv2md for arxivUrl, MinerU for oaPdfUrl. Returns PaperMeta with markdownPath.",
+  "Tries arxiv2md for arxivUrl, MinerU for oaPdfUrl. When pdfPath is set, title and normalizedTitle " +
+  "are auto-derived from the filename. Returns PaperMeta with markdownPath.",
   {
-    title: z.string().describe("Paper title"),
-    normalizedTitle: z.string().describe("Normalized title for cache lookup"),
+    title: z.string().optional().describe("Paper title (auto-derived from pdfPath filename if omitted)"),
+    normalizedTitle: z.string().optional().describe("Normalized title for cache lookup (auto-derived from pdfPath filename if omitted)"),
     arxivId: z.string().optional(),
     doi: z.string().optional(),
     s2Id: z.string().optional(),
     abstract: z.string().optional(),
     arxivUrl: z.string().optional().describe("arXiv abs URL"),
     oaPdfUrl: z.string().optional().describe("Open access PDF URL"),
+    pdfPath: z.string().optional().describe("Absolute local path to a PDF file"),
     year: z.number().optional(),
     authors: z.string().optional(),
     citationCount: z.number().optional(),
@@ -75,7 +77,8 @@ server.tool(
   },
   async (args, extra: any) => {
     try {
-      const result = await paperFetching(args, makeProgress(extra));
+      const meta = { ...args, title: args.title ?? "", normalizedTitle: args.normalizedTitle ?? "" };
+      const result = await paperFetching(meta, makeProgress(extra));
       return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
     } catch (e: any) {
       return { isError: true, content: [{ type: "text" as const, text: `paper_fetching failed: ${e.message}` }] };

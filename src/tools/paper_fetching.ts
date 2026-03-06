@@ -1,7 +1,9 @@
+import { basename } from "path";
 import type { PaperMeta } from "../types.js";
 import * as arxiv from "../utils/arxiv.js";
 import * as pdf from "../utils/pdf.js";
 import * as cache from "../utils/cache.js";
+import { normTitle } from "../utils/misc.js";
 import type { ProgressCallback } from "../utils/pdf.js";
 
 /**
@@ -12,6 +14,13 @@ export async function paperFetching(
   meta: PaperMeta,
   onProgress?: ProgressCallback,
 ): Promise<PaperMeta> {
+  // 0. When pdfPath is set, derive normalizedTitle (always) and title (if missing) from filename
+  if (meta.pdfPath) {
+    const stem = basename(meta.pdfPath, ".pdf");
+    meta.normalizedTitle = normTitle(stem);
+    if (!meta.title) meta.title = stem;
+  }
+
   // 1. Check cache
   const cachedPath = cache.loadMarkdownPath(meta.normalizedTitle);
   if (cachedPath) {
@@ -19,7 +28,18 @@ export async function paperFetching(
     return meta;
   }
 
-  // 2. Try arxiv2md
+  // 2. Try local PDF via MinerU
+  if (meta.pdfPath) {
+    await onProgress?.({ message: `Converting local PDF via MinerU: ${meta.pdfPath}` });
+    const md = await pdf.content(meta.pdfPath, onProgress);
+    if (md) {
+      meta.markdownPath = cache.saveMarkdown(meta.title, md);
+      cache.saveMeta(meta);
+      return meta;
+    }
+  }
+
+  // 3. Try arxiv2md
   if (meta.arxivUrl) {
     await onProgress?.({ message: `Fetching via arxiv2md: ${meta.arxivUrl}` });
     const md = await arxiv.content(meta.arxivUrl);
@@ -30,7 +50,7 @@ export async function paperFetching(
     }
   }
 
-  // 3. Try MinerU PDF conversion
+  // 4. Try MinerU PDF conversion
   if (meta.oaPdfUrl) {
     await onProgress?.({ message: `Fetching PDF via MinerU: ${meta.oaPdfUrl}` });
     const md = await pdf.content(meta.oaPdfUrl, onProgress);
@@ -41,7 +61,7 @@ export async function paperFetching(
     }
   }
 
-  // 4. No full text available
+  // 5. No full text available
   cache.saveMeta(meta);
   return meta;
 }

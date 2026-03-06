@@ -9,6 +9,7 @@ export interface PaperMeta {
   abstract?: string;
   arxivUrl?: string;
   oaPdfUrl?: string;
+  pdfPath?: string;
   year?: number;
   authors?: string;
   citationCount?: number;
