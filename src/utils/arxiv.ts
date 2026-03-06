@@ -39,42 +39,54 @@ export function parseEntry(entry: any): PaperMeta | null {
 
 /** Fetch full markdown of an arXiv paper via arxiv2md.org. */
 export async function content(url: string): Promise<string | null> {
-  const id = urlToId(url);
-  const absUrl = idToUrl(id);
-  const resp = await fetch(BASE_ARXIV2MD, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ input_text: absUrl }),
-  });
-  if (!resp.ok) return null;
-  const data = (await resp.json()) as { content?: string };
-  return data.content || null;
+  try {
+    const id = urlToId(url);
+    const absUrl = idToUrl(id);
+    const resp = await fetch(BASE_ARXIV2MD, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ input_text: absUrl }),
+    });
+    if (!resp.ok) return null;
+    const data = (await resp.json()) as { content?: string };
+    return data.content || null;
+  } catch {
+    return null;
+  }
 }
 
 /** Search arXiv by title. Returns best match or null. */
 export async function query(title: string): Promise<PaperMeta | null> {
-  const params = new URLSearchParams({
-    search_query: `ti:"${title}"`,
-    max_results: "1",
-  });
-  const resp = await fetch(`${BASE_API}?${params}`);
-  if (!resp.ok) return null;
-  const parsed = new XMLParser().parse(await resp.text());
-  const entry = Array.isArray(parsed?.feed?.entry)
-    ? parsed.feed.entry[0]
-    : parsed?.feed?.entry;
-  return parseEntry(entry);
+  try {
+    const params = new URLSearchParams({
+      search_query: `ti:"${title}"`,
+      max_results: "1",
+    });
+    const resp = await fetch(`${BASE_API}?${params}`);
+    if (!resp.ok) return null;
+    const parsed = new XMLParser().parse(await resp.text());
+    const entry = Array.isArray(parsed?.feed?.entry)
+      ? parsed.feed.entry[0]
+      : parsed?.feed?.entry;
+    return parseEntry(entry);
+  } catch {
+    return null;
+  }
 }
 
 /** Query arXiv by paper ID. Returns metadata or null. */
 export async function queryById(id: string): Promise<PaperMeta | null> {
-  const cleanId = id.replace(/^arXiv:/i, "").replace(/v\d+$/, "");
-  const params = new URLSearchParams({ id_list: cleanId, max_results: "1" });
-  const resp = await fetch(`${BASE_API}?${params}`);
-  if (!resp.ok) return null;
-  const parsed = new XMLParser().parse(await resp.text());
-  const entry = Array.isArray(parsed?.feed?.entry)
-    ? parsed.feed.entry[0]
-    : parsed?.feed?.entry;
-  return parseEntry(entry);
+  try {
+    const cleanId = id.replace(/^arXiv:/i, "").replace(/v\d+$/, "");
+    const params = new URLSearchParams({ id_list: cleanId, max_results: "1" });
+    const resp = await fetch(`${BASE_API}?${params}`);
+    if (!resp.ok) return null;
+    const parsed = new XMLParser().parse(await resp.text());
+    const entry = Array.isArray(parsed?.feed?.entry)
+      ? parsed.feed.entry[0]
+      : parsed?.feed?.entry;
+    return parseEntry(entry);
+  } catch {
+    return null;
+  }
 }

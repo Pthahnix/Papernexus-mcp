@@ -6,9 +6,13 @@ const FIELDS =
   "title,year,authors,abstract,citationCount,externalIds,openAccessPdf,url";
 
 async function fetchJson(url: string): Promise<any> {
-  const resp = await fetch(url);
-  if (!resp.ok) return null;
-  return resp.json();
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) return null;
+    return resp.json();
+  } catch {
+    return null;
+  }
 }
 
 export function mapPaper(p: any): PaperMeta | null {
