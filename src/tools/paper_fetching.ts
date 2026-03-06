@@ -1,0 +1,47 @@
+import type { PaperMeta } from "../types.js";
+import * as arxiv from "../utils/arxiv.js";
+import * as pdf from "../utils/pdf.js";
+import * as cache from "../utils/cache.js";
+import type { ProgressCallback } from "../utils/pdf.js";
+
+/**
+ * paper_fetching tool: fetch paper markdown given PaperMeta with URLs.
+ * Cache-first: checks local cache before network calls.
+ */
+export async function paperFetching(
+  meta: PaperMeta,
+  onProgress?: ProgressCallback,
+): Promise<PaperMeta> {
+  // 1. Check cache
+  const cachedPath = cache.loadMarkdownPath(meta.normalizedTitle);
+  if (cachedPath) {
+    meta.markdownPath = cachedPath;
+    return meta;
+  }
+
+  // 2. Try arxiv2md
+  if (meta.arxivUrl) {
+    await onProgress?.({ message: `Fetching via arxiv2md: ${meta.arxivUrl}` });
+    const md = await arxiv.content(meta.arxivUrl);
+    if (md) {
+      meta.markdownPath = cache.saveMarkdown(meta.title, md);
+      cache.saveMeta(meta);
+      return meta;
+    }
+  }
+
+  // 3. Try MinerU PDF conversion
+  if (meta.oaPdfUrl) {
+    await onProgress?.({ message: `Fetching PDF via MinerU: ${meta.oaPdfUrl}` });
+    const md = await pdf.content(meta.oaPdfUrl, onProgress);
+    if (md) {
+      meta.markdownPath = cache.saveMarkdown(meta.title, md);
+      cache.saveMeta(meta);
+      return meta;
+    }
+  }
+
+  // 4. No full text available
+  cache.saveMeta(meta);
+  return meta;
+}
