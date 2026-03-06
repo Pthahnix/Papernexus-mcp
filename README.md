@@ -5,7 +5,7 @@ MCP server for academic paper searching, fetching, and reference exploration.
 ## Tools
 
 | Tool | Description |
-|------|-------------|
+| ------ | ------------- |
 | `paper_searching` | Enrich Google Scholar results with metadata from Semantic Scholar, arXiv, Unpaywall |
 | `paper_fetching` | Fetch full paper as markdown (cache-first, arxiv2md or MinerU PDF conversion) |
 | `paper_references` | Extract cited references from paper markdown, enrich each with metadata |
@@ -30,14 +30,14 @@ npm run build        # Compile TypeScript
 ## Environment Variables
 
 | Variable | Purpose | Required |
-|----------|---------|----------|
+| ---------- | --------- | ---------- |
 | `TOKEN_MINERU` | MinerU PDF OCR API | Yes |
 | `EMAIL_UNPAYWALL` | Unpaywall OA lookup | Yes |
 | `DIR_CACHE` | Cache directory (default: `.cache/`) | No |
 
 ## Architecture
 
-```
+```text
 apify MCP (external) → paper_searching → paper_fetching → paper_reading
                                                         ↗
                                           paper_references → loop
