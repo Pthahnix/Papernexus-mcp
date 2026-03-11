@@ -79,7 +79,7 @@ describe("paper_fetching", () => {
   const originalMineru = process.env.TOKEN_MINERU;
 
   beforeEach(() => {
-    cacheDir = mkdtempSync(join(tmpdir(), "papernexus-fetching-"));
+    cacheDir = mkdtempSync(join(tmpdir(), "ncs-fetching-"));
     process.env.DIR_CACHE = cacheDir;
   });
 

@@ -11,7 +11,7 @@ describe("cache", () => {
   const originalCache = process.env.DIR_CACHE;
 
   beforeEach(() => {
-    dir = mkdtempSync(join(tmpdir(), "papernexus-test-"));
+    dir = mkdtempSync(join(tmpdir(), "ncs-test-"));
     process.env.DIR_CACHE = dir;
   });
 

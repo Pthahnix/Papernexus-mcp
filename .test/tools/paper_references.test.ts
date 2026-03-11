@@ -142,7 +142,7 @@ Some content.
     const originalCache = process.env.DIR_CACHE;
 
     beforeEach(() => {
-      tmpDir = mkdtempSync(join(tmpdir(), "papernexus-refs-"));
+      tmpDir = mkdtempSync(join(tmpdir(), "ncs-refs-"));
       process.env.DIR_CACHE = tmpDir;
     });
 
@@ -287,7 +287,7 @@ This is a test paper.
     const originalCache = process.env.DIR_CACHE;
 
     beforeEach(() => {
-      tmpDir = mkdtempSync(join(tmpdir(), "papernexus-refsim-"));
+      tmpDir = mkdtempSync(join(tmpdir(), "ncs-refsim-"));
       process.env.DIR_CACHE = tmpDir;
     });
 

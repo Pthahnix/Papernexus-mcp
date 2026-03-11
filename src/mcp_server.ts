@@ -9,7 +9,7 @@ import { paperReading } from "./tools/paper_reading.js";
 import type { ProgressCallback } from "./utils/pdf.js";
 
 const server = new McpServer({
-  name: "papernexus",
+  name: "neocortica-scholar",
   version: "0.1.0",
 });
 

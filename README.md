@@ -1,4 +1,4 @@
-# papernexus-mcp
+# Neocortica-Scholar
 
 MCP server for academic paper searching, fetching, and reference exploration.
 

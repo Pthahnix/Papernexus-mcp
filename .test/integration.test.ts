@@ -74,7 +74,7 @@ describe("integration: paper_fetching", () => {
   let cacheDir: string;
 
   beforeEach(() => {
-    cacheDir = mkdtempSync(join(tmpdir(), "papernexus-int-"));
+    cacheDir = mkdtempSync(join(tmpdir(), "ncs-int-"));
     process.env.DIR_CACHE = cacheDir;
   });
 
@@ -131,7 +131,7 @@ describe("integration: paper_references", () => {
   let cacheDir: string;
 
   beforeEach(() => {
-    cacheDir = mkdtempSync(join(tmpdir(), "papernexus-int-refs-"));
+    cacheDir = mkdtempSync(join(tmpdir(), "ncs-int-refs-"));
     process.env.DIR_CACHE = cacheDir;
   });
 

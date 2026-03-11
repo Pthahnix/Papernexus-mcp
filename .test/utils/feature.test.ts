@@ -18,7 +18,7 @@ describe("feature: utils integration", () => {
   const originalCache = process.env.DIR_CACHE;
 
   beforeEach(() => {
-    cacheDir = mkdtempSync(join(tmpdir(), "papernexus-feature-"));
+    cacheDir = mkdtempSync(join(tmpdir(), "ncs-feature-"));
     process.env.DIR_CACHE = cacheDir;
   });
 
