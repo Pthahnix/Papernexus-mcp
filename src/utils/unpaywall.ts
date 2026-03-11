@@ -3,8 +3,8 @@ import { normTitle } from "./misc.js";
 
 /** Query Unpaywall by DOI. Returns PaperMeta with oaPdfUrl if OA available. */
 export async function query(doi: string): Promise<PaperMeta | null> {
-  const email = process.env.EMAIL_UNPAYWALL;
-  if (!email) throw new Error("EMAIL_UNPAYWALL not set in .env");
+  const email = process.env.EMAIL;
+  if (!email) throw new Error("EMAIL not set in .env");
   const url = `https://api.unpaywall.org/v2/${encodeURIComponent(doi)}?email=${email}`;
   const resp = await fetch(url);
   if (!resp.ok) return null;

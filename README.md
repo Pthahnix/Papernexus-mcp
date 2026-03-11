@@ -7,7 +7,7 @@ A component of [Neocortica](https://github.com/Pthahnix/Neocortica) — an MCP s
 | Tool | Description |
 | ---- | ----------- |
 | `paper_searching` | Enrich a Google Scholar result with metadata from arXiv, Semantic Scholar, and Unpaywall |
-| `paper_fetching` | Fetch full paper as markdown: cache → local PDF → arxiv2md → MinerU |
+| `paper_fetching` | Fetch full paper as markdown: cache → local PDF → arxiv2md (→ arxiv PDF fallback) → MinerU |
 | `paper_content` | Read cached paper markdown by title (local, no network) |
 | `paper_reference` | Get paper references via Semantic Scholar API, fallback to markdown parsing |
 | `paper_reading` | AI-powered three-pass paper reader via LLM agent (Keshav method) |
@@ -16,9 +16,9 @@ A component of [Neocortica](https://github.com/Pthahnix/Neocortica) — an MCP s
 
 ```bash
 npm install
-cp .env.example .env
-# Fill in your API keys in .env
 ```
+
+Configure environment variables in `.mcp.json` under the `neocortica-scholar` server's `env` field.
 
 ## Usage
 
@@ -32,11 +32,12 @@ npm run build        # Compile TypeScript
 
 | Variable | Purpose | Required |
 | -------- | ------- | -------- |
-| `TOKEN_MINERU` | MinerU PDF→markdown API | Yes |
-| `EMAIL_UNPAYWALL` | Unpaywall OA PDF lookup | Yes |
-| `DIR_CACHE` | Cache directory (default: `.cache/`) | No |
-| `AGENT_MODEL` | LLM model for paper_reading (default: `openai/gpt-oss-120b`) | No |
-| `OPENROUTER_API_KEY` | OpenRouter API key for paper_reading | For paper_reading |
+| `MINERU_TOKEN` | MinerU PDF→markdown API | Yes |
+| `EMAIL` | Unpaywall OA PDF lookup | Yes |
+| `NEOCORTICA_CACHE` | Cache directory (default: `.cache/`) | No |
+| `OPENAI_API_KEY` | LLM API key for paper_reading | For paper_reading |
+| `OPENAI_BASE_URL` | LLM API base URL | For paper_reading |
+| `OPENAI_MODEL` | LLM model for paper_reading (default: `openai/gpt-oss-120b`) | No |
 
 ## Architecture
 
@@ -74,8 +75,10 @@ input → cache hit? ── yes → return cached
     pdfPath? ── yes → MinerU (local PDF)
             │ no
             ▼
-    arxivUrl? ── yes → arxiv2md
-            │ no
+    arxivUrl? ── yes → arxiv2md ── success → done
+            │ no          │ fail
+            ▼             ▼
+            │      arxivId? → arxiv PDF via MinerU
             ▼
     oaPdfUrl? ── yes → MinerU (remote PDF)
             │ no

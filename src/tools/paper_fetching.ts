@@ -48,6 +48,18 @@ export async function paperFetching(
       cache.saveMeta(meta);
       return meta;
     }
+
+    // 3.5 arxiv2md failed — fallback to arxiv PDF URL via MinerU
+    if (meta.arxivId) {
+      const arxivPdfUrl = `https://arxiv.org/pdf/${meta.arxivId}`;
+      await onProgress?.({ message: `arxiv2md failed, fallback to arxiv PDF via MinerU: ${arxivPdfUrl}` });
+      const md = await pdf.content(arxivPdfUrl, onProgress);
+      if (md) {
+        meta.markdownPath = cache.saveMarkdown(meta.title, md);
+        cache.saveMeta(meta);
+        return meta;
+      }
+    }
   }
 
   // 4. Try MinerU PDF conversion

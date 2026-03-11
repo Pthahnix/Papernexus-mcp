@@ -73,7 +73,7 @@ export async function enrichMeta(meta: PaperMeta): Promise<PaperMeta> {
       try {
         const upResult = await unpaywall.query(meta.doi);
         if (upResult?.oaPdfUrl) meta.oaPdfUrl = upResult.oaPdfUrl;
-      } catch { /* EMAIL_UNPAYWALL may not be set */ }
+      } catch { /* EMAIL may not be set */ }
     }
   }
 

@@ -3,7 +3,7 @@ import { getModel } from "@mariozechner/pi-ai";
 
 /** Create a paper-reading Agent with the given system prompt. Uses OpenRouter config from .env. */
 export function createReadingAgent(systemPrompt: string): Agent {
-  const modelName = process.env.MODEL_NAME_OPENROUTER ?? "openai/gpt-oss-120b";
+  const modelName = process.env.OPENAI_MODEL ?? "openai/gpt-oss-120b";
   const model = getModel("openrouter", modelName as any);
 
   return new Agent({
@@ -11,7 +11,7 @@ export function createReadingAgent(systemPrompt: string): Agent {
       systemPrompt,
       model,
     },
-    getApiKey: () => process.env.API_KEY_OPENROUTER ?? "",
+    getApiKey: () => process.env.OPENAI_API_KEY ?? "",
   });
 }
 

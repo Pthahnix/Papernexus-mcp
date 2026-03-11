@@ -14,8 +14,8 @@ export type ProgressCallback = (info: {
 }) => void | Promise<void>;
 
 function getToken(): string {
-  const token = process.env.TOKEN_MINERU;
-  if (!token) throw new Error("TOKEN_MINERU not set in .env");
+  const token = process.env.MINERU_TOKEN;
+  if (!token) throw new Error("MINERU_TOKEN not set in .env");
   return token;
 }
 
