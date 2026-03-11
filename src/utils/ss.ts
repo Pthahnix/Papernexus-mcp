@@ -47,12 +47,25 @@ export async function query(title: string): Promise<PaperMeta | null> {
   return mapPaper(data.data[0]);
 }
 
-/** Get references of a paper by its Semantic Scholar ID. */
-export async function references(s2Id: string): Promise<PaperMeta[]> {
-  const url = `${BASE}/paper/${s2Id}/references?fields=${FIELDS}&limit=100`;
-  const data = await fetchJson(url);
-  if (!data?.data) return [];
-  return data.data
-    .map((r: any) => mapPaper(r.citedPaper))
-    .filter((p: PaperMeta | null): p is PaperMeta => p !== null);
+/** Get all references of a paper. Accepts s2Id, "ARXIV:id", or "DOI:doi". Paginates automatically. */
+export async function references(paperId: string): Promise<PaperMeta[]> {
+  const all: PaperMeta[] = [];
+  let offset = 0;
+  const limit = 1000;
+
+  while (true) {
+    const url = `${BASE}/paper/${encodeURIComponent(paperId)}/references?fields=${FIELDS}&limit=${limit}&offset=${offset}`;
+    const data = await fetchJson(url);
+    if (!data?.data) break;
+
+    for (const r of data.data) {
+      const p = mapPaper(r.citedPaper);
+      if (p) all.push(p);
+    }
+
+    if (data.next === undefined || data.data.length < limit) break;
+    offset = data.next;
+  }
+
+  return all;
 }
