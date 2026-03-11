@@ -134,9 +134,8 @@ vite.config.ts.timestamp-*
 # Build output
 dist/
 
-# Dot-directories (caches, context, etc.) — but keep .test/
+# Dot-directories (caches, context, .test, etc.)
 .*/
-!.test/
 
 # Local config
 .mcp.json
