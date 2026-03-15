@@ -64,4 +64,4 @@ Retrieves all references of a paper. Primary path uses Semantic Scholar API with
 
 ## License
 
-Apache License 2.0
+[Apache-2.0 License](LICENSE)
